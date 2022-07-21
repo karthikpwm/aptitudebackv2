@@ -107,7 +107,7 @@ exports.insertresult = async (candidate_id) => {
     //  GROUP BY candidatetestdata.candidate_id`;
     let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,any_value(candidatedetails.name) as name,any_value(candidatedetails.email) as email,any_value(candidatedetails.position) as position,
     any_value(candidatedetails.mobile) as mobile,any_value(candidatedetails.candidate_id) as candidate_id,any_value(candidatedetails.company_id) as company_id,any_value(candidatedetails.ctc) as lastctc,any_value(candidatedetails.pincode) as pincode,any_value(candidatetestdata.createddate) as date,any_value(candidatetestlog.timepassed) as time,any_value(candidatetestlog.timelimit) as timelimit
-        from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id AND candidatedetails.candidate_id = 13
+        from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id AND candidatedetails.candidate_id = ?
      GROUP BY candidatetestdata.candidate_id`;
     const result = await db.query(sql, [candidate_id])
     const name = result[0][0]['name']
