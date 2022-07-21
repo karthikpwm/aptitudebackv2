@@ -15,7 +15,7 @@ exports.starttest = async (candidate_id, company_id, category_id) => {
     await con.commit();
     await con.beginTransaction();
     await con.query("insert into candidatetestdata (testlog_id,candidate_id,question_id,answer,createddate) select ?,?,question_id,?,now() from questions where company_id = ? and category_id = ? order by question_id desc limit 20",
-      [testlog_id, candidate_id, null, company_id,category_id])
+      [testlog_id, candidate_id, null, company_id, category_id])
     //await con.query("SELECT * from candidatetestdata inner join questions ON questions.question_id = candidatetestdata.question_id where testlog_id = ?,candidate_id = ?",
     //[testlog_id, candidate_id, NULL])
     await con.commit();
@@ -98,20 +98,24 @@ exports.printcanquestions = async (candidate_id) => {
     throw e
   }
 }
-exports.insertresult = async(candidate_id) => {
+exports.insertresult = async (candidate_id) => {
   const con = await db.getConnection()
   try {
-    let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,candidatedetails.name as name,candidatedetails.email as email,candidatedetails.position as position,
-    candidatedetails.mobile as mobile,candidatedetails.candidate_id as candidate_id,candidatedetails.company_id as company_id,candidatedetails.ctc as lastctc,candidatedetails.pincode as pincode,candidatetestdata.createddate as date,candidatetestlog.timepassed as time,candidatetestlog.timelimit as timelimit
-        from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id AND candidatedetails.candidate_id = ?
+    // let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,candidatedetails.name as name,candidatedetails.email as email,candidatedetails.position as position,
+    // candidatedetails.mobile as mobile,candidatedetails.candidate_id as candidate_id,candidatedetails.company_id as company_id,candidatedetails.ctc as lastctc,candidatedetails.pincode as pincode,candidatetestdata.createddate as date,candidatetestlog.timepassed as time,candidatetestlog.timelimit as timelimit
+    //     from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id AND candidatedetails.candidate_id = ?
+    //  GROUP BY candidatetestdata.candidate_id`;
+    let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,any_value(candidatedetails.name) as name,any_value(candidatedetails.email) as email,any_value(candidatedetails.position) as position,
+    any_value(candidatedetails.mobile) as mobile,any_value(candidatedetails.candidate_id) as candidate_id,any_value(candidatedetails.company_id) as company_id,any_value(candidatedetails.ctc) as lastctc,any_value(candidatedetails.pincode) as pincode,any_value(candidatetestdata.createddate) as date,any_value(candidatetestlog.timepassed) as time,any_value(candidatetestlog.timelimit) as timelimit
+        from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id AND candidatedetails.candidate_id = 13
      GROUP BY candidatetestdata.candidate_id`;
-     const result = await db.query(sql, [candidate_id])
-     const name = result[0][0]['name']
-     const mark = result[0][0]['totalcorrect']
-    
+    const result = await db.query(sql, [candidate_id])
+    const name = result[0][0]['name']
+    const mark = result[0][0]['totalcorrect']
+
     const mobile = result[0][0]['mobile']
     const email = result[0][0]['email']
-    const time =  result[0][0]['timelimit'] - result[0][0]['time']
+    const time = result[0][0]['timelimit'] - result[0][0]['time']
     const date = result[0][0]['date']
     const companyid = result[0][0]['company_id']
     const position = result[0][0]['position']
@@ -119,11 +123,11 @@ exports.insertresult = async(candidate_id) => {
     const pincode = result[0][0]['pincode']
     await con.beginTransaction();
     await con.query("insert into results (candidate_id,name,marks,time,date,email,mobile,lastctc,pincode,company_id,position) values (?,?,?,?,?,?,?,?,?,?,?)",
-      [candidate_id, name, mark,time,date,email,mobile,lastctc,pincode,companyid,position])
-    
+      [candidate_id, name, mark, time, date, email, mobile, lastctc, pincode, companyid, position])
+
     await con.commit();
     return 'success'
-  }catch (e) {
+  } catch (e) {
     throw e
   }
 }
@@ -235,11 +239,11 @@ exports.insertcandidate = async (param) => {
   try {
     await con.beginTransaction();
     const result = await con.query("INSERT INTO candidatedetails (name,position, email, mobile,company_id,ctc,pincode,category_id) VALUE ( ?, ?, ?, ?, ?, ?, ?, ? ) ",
-      [param.name, param.position, param.email, param.mobile, param.company_id, param.ctc, param.pincode,param.category_id])
+      [param.name, param.position, param.email, param.mobile, param.company_id, param.ctc, param.pincode, param.category_id])
     await con.commit();
     await con.beginTransaction();
     const test = await con.query("INSERT INTO candidatetestlog (candidate_id,test, createdate,company_id,timelimit,category_id) VALUE ( ?, ?, NOW(), ?, ?,?) ",
-      [result[0].insertId, 0, param.company_id, param.timelimit,param.category_id])
+      [result[0].insertId, 0, param.company_id, param.timelimit, param.category_id])
     await con.commit();
     return result[0].insertId;
   } catch (err) {
