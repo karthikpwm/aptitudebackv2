@@ -274,8 +274,8 @@ exports.editqstn = async (question_id, param) => {
   const con = await db.getConnection()
   try {
     await con.beginTransaction();
-    const result = await con.query("update questions SET question = ?, options = ?, answer = ?, company_id = ? where question_id = ?",
-      [param.question, param.options, param.answer, param.company_id, question_id])
+    const result = await con.query("update questions SET question = ?, options = ?, answer = ?, company_id = ?, category_id = ? where question_id = ?",
+      [param.question, param.options, param.answer, param.company_id, param.category_id, question_id])
     await con.commit();
     return result;
   } catch (err) {
