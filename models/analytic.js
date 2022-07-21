@@ -19,6 +19,7 @@ exports.starttest = async (candidate_id, company_id, category_id) => {
     //await con.query("SELECT * from candidatetestdata inner join questions ON questions.question_id = candidatetestdata.question_id where testlog_id = ?,candidate_id = ?",
     //[testlog_id, candidate_id, NULL])
     await con.commit();
+
     //console.log(testlog_id)
     return testlog_id;
 
