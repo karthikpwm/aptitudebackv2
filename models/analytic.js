@@ -68,9 +68,13 @@ exports.answertest = async (testlog_id, candidate_id, userAnswers, timepassed) =
 }
 exports.getmarks = async () => {
   try {
-    let sql = `SELECT * from results`;
-    // let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,any_value(candidatedetails.name) as name,any_value(candidatedetails.email) as email,
-    //  any_value(candidatedetails.mobile) as mobile,any_value(candidatedetails.ctc) as ctc,any_value(candidatedetails.pincode) as pincode,any_value(candidatedetails.candidate_id) as candidate_id,any_value(candidatedetails.company_id) as company_id,any_value(candidatedetails.position) as position,any_value(candidatetestdata.createddate) as date,any_value(candidatetestlog.timepassed) as time
+    //let sql = `SELECT * from results`;
+    let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,any_value(candidatedetails.name) as name,any_value(candidatedetails.email) as email,
+     any_value(candidatedetails.mobile) as mobile,any_value(candidatedetails.ctc) as ctc,any_value(candidatedetails.pincode) as pincode,any_value(candidatedetails.candidate_id) as candidate_id,any_value(candidatedetails.company_id) as company_id,any_value(candidatedetails.position) as position,any_value(candidatetestdata.createddate) as date,any_value(candidatetestlog.timepassed) as time
+         from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id
+      GROUP BY candidatetestdata.candidate_id`;
+    // let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,candidatedetails.name as name,candidatedetails.email as email,
+    //  candidatedetails.mobile as mobile,candidatedetails.ctc as ctc,candidatedetails.pincode as pincode,candidatedetails.candidate_id as candidate_id,candidatedetails.position as position,candidatedetails.company_id as company_id,candidatedetails.position as position,candidatetestdata.createddate as date,candidatetestlog.timepassed as time
     //      from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id
     //   GROUP BY candidatetestdata.candidate_id`;
     const result = await db.query(sql)
@@ -182,15 +186,6 @@ exports.getcandidateqstnmarks = async (candidate_id) => {
   }
 }
 
-// exports.getAll = async (portfolio_id) => {
-//   try {
-//     let sql = `SELECT analytic_id, name, weightage,symbol FROM analytic where portfolio_id = ?`;
-//     const result = await db.query(sql, [portfolio_id])
-//     return result[0];
-//   } catch (e) {
-//     throw e
-//   }
-// }
 
 exports.fetch = async (testlog_id, candidate_id) => {
   try {
@@ -293,5 +288,29 @@ exports.deleteqstn = async (param) => {
     return true;
   } catch (e) {
     throw e
+  }
+}
+exports.deletecategory = async (param) => {
+  try {
+    let sql = `DELETE FROM categories where category_id=?`;
+    const result = await db.query(sql, [param.category_id])
+    return true;
+  } catch (e) {
+    throw e
+  }
+}
+exports.editcategory = async (category_id, param) => {
+  const con = await db.getConnection()
+  try {
+    await con.beginTransaction();
+    const result = await con.query("update categories SET category = ? where category_id = ?",
+      [param.category, category_id])
+    await con.commit();
+    return result;
+  } catch (err) {
+    await con.rollback();
+    throw err;
+  } finally {
+    con.close()
   }
 }

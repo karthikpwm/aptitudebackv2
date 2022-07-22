@@ -20,15 +20,7 @@ router.delete("/deletecan", auth, catchErrors(analyticController.deletecan))
 router.post("/insertqstn", auth, catchErrors(analyticController.insertqstn))
 router.put("/editqstn/:question_id", auth, catchErrors(analyticController.editqstn))
 router.delete("/deleteqstn/:question_id", auth, catchErrors(analyticController.deleteqstn))
-//router.get("/uploadRecord", catchErrors(analyticController.uploadRecord))
-// router.post("/uploadRecord", catchErrors(analyticController.postUploadRecord))
-// router.put("/:analytic_id", catchErrors(analyticController.updateRecord))
-// router.post("/upload", catchErrors(analyticController.upload))
-// router.post("/uploadnse", catchErrors(analyticController.uploadnse))
-//router.post("/upexcel", catchErrors(analyticController.upexcel))
-//router.put("/update", catchErrors(analyticController.update))
-// router.put("/:analytic_id", catchErrors(analyticController.updateRecord))
-
-// router.delete("/:analytic_id", catchErrors(analyticController.deleteRecord))
+router.delete("/deletecategory/:category_id", auth, catchErrors(analyticController.deletecategory))
+router.put("/editcategory/:category_id", auth, catchErrors(analyticController.editcategory))
 
 module.exports = router

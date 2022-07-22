@@ -167,7 +167,7 @@ exports.starttest = async (req, res) => {
   if (Object.keys(req.body).length === 0 && req.body.candidate_id === undefined) {
     throw '400:Parameter not Valid'
   }
-  const result = await analytic.starttest(req.body.candidate_id, req.body.company_id,req.body.category_id)
+  const result = await analytic.starttest(req.body.candidate_id, req.body.company_id, req.body.category_id)
   res.json({
     message: `analytic updated successfully`,
     'check': 1,
@@ -196,6 +196,26 @@ exports.deleteqstn = async (req, res) => {
     message: 'record delete successfully'
   })
 
+}
+exports.deletecategory = async (req, res) => {
+  if (Object.keys(req.params).length === 0 && req.params.category_id === undefined) {
+    throw '400:Parameter not Valid'
+  }
+
+  const result = await analytic.deletecategory(req.params)
+  res.json({
+    message: 'category deleted successfully'
+  })
+}
+
+exports.editcategory = async (req, res) => {
+
+  if (Object.keys(req.params).length === 0 && req.params.category_id === undefined) {
+    throw '400:Parameter not Valid'
+  }
+  //let sendmail = await analytic.mail(req.params.candidate_id)
+  let result = await analytic.editcategory(req.params.category_id, req.body)
+  res.json({ data: result })
 };
 // exports.update = async (req,res) => {
 //   if(req.body.constructor === Object && Object.keys(req.body).length === 0){
