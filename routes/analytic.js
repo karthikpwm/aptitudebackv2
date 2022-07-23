@@ -22,5 +22,6 @@ router.put("/editqstn/:question_id", auth, catchErrors(analyticController.editqs
 router.delete("/deleteqstn/:question_id", auth, catchErrors(analyticController.deleteqstn))
 router.delete("/deletecategory/:category_id", auth, catchErrors(analyticController.deletecategory))
 router.put("/editcategory/:category_id", auth, catchErrors(analyticController.editcategory))
+router.delete("/deleteresults/:candidate_id", auth, catchErrors(analyticController.deleteresults))
 
 module.exports = router

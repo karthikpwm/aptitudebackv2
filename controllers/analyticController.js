@@ -217,6 +217,16 @@ exports.editcategory = async (req, res) => {
   let result = await analytic.editcategory(req.params.category_id, req.body)
   res.json({ data: result })
 };
+
+exports.deleteresults = async (req, res) => {
+  if (Object.keys(req.params).length === 0 && req.params.candidate_id === undefined) {
+    throw '400:Parameter not Valid'
+  }
+  //let sendmail = await analytic.mail(req.params.candidate_id)
+  let result = await analytic.deleteresults(req.params)
+  res.json({ data: result })
+
+}
 // exports.update = async (req,res) => {
 //   if(req.body.constructor === Object && Object.keys(req.body).length === 0){
 //     throw '400:Parameter not Valid'

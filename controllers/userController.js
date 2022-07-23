@@ -35,6 +35,14 @@ exports.login = async (req, res) => {
     token,
   })
 }
+exports.checkpassword = async (req, res) => {
+  const { password } = req.body
+  const validation = await User.checkpassword({ password })
+  if (!validation || validation.length === 0) throw "Password did not match"
+  res.json({
+    data: 'true'
+  })
+}
 exports.logout = async (req, res) => {
   jwt.destry()
 }
@@ -47,8 +55,8 @@ exports.editpassword = async (req, res) => {
   if (Object.keys(req.params).length === 0 && req.params.userid === undefined) {
     throw '400:Parameter not Valid'
   }
-  const { name, password, email, company_id } = req.body
-  let result = await User.editpassword(req.params.userid, { name, email, password: sha256(password + process.env.SALT), company_id })
+  const { name, password, email, company_id, apassword } = req.body
+  let result = await User.editpassword(req.params.userid, { name, email, password: sha256(password + process.env.SALT), company_id, apassword })
   res.json({ data: result })
 }
 
@@ -91,23 +99,23 @@ exports.addcategory = async (req, res) => {
     result: result
   })
 }
-exports.getcategories = async(req,res) => {
+exports.getcategories = async (req, res) => {
   let data = await User.getcategories();
 
   res.json({
     data: data
-  }) 
+  })
 
-  
+
 }
 exports.getcategory = async (req, res) => {
-  
+
   const data = await User.getcategory()
   res.json({
     data: data
   })
 }
-exports.creditupdate = async(req,res) => {
+exports.creditupdate = async (req, res) => {
   if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
     throw '400:Parameter not Valid'
   }

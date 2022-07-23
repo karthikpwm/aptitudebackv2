@@ -5,15 +5,15 @@ exports.create = async (param) => {
   try {
     await con.beginTransaction();
     const test = await con.query("Insert into companydetails (name,credit) value (?, 5)",
-    [param.company])
+      [param.company])
     await con.commit();
     await con.beginTransaction();
     const result = await con.query("INSERT INTO userdetails (name, email, password,company_id,usertype) VALUE ( ?, ?, ?, ?, ? ) ",
-      [param.name, param.email, param.password,test[0].insertId, param.usertype])
+      [param.name, param.email, param.password, test[0].insertId, param.usertype])
     await con.commit();
     return result[0].insertId;
   } catch (err) {
-    console.log(err)
+    //console.log(err)
     await con.rollback();
     throw err;
   } finally {
@@ -54,6 +54,15 @@ exports.connection = async (params) => {
     throw e
   }
 }
+exports.checkpassword = async (params) => {
+  try {
+    let sql = 'select apassword from userdetails where apassword = ?'
+    const result = await db.query(sql, [params.password])
+    return result[0];
+  } catch (e) {
+    throw e
+  }
+}
 exports.getuserdetails = async () => {
   try {
     let sql = `SELECT userdetails.*,companydetails.credit from userdetails left join companydetails ON userdetails.company_id = companydetails.company_id`;
@@ -76,8 +85,8 @@ exports.editpassword = async (userid, param) => {
   const con = await db.getConnection()
   try {
     await con.beginTransaction();
-    let result = await con.query('update userdetails SET name = ? ,password = ?, email = ?,company_id = ? where user_id = ?',
-      [param.name, param.password, param.email, param.company_id, userid])
+    let result = await con.query('update userdetails SET name = ? ,password = ?, email = ?,company_id = ?, apassword = ? where user_id = ?',
+      [param.name, param.password, param.email, param.company_id, param.apassword, userid])
     await con.commit();
     return result
 
@@ -116,21 +125,21 @@ exports.createcompany = async (param) => {
 }
 exports.addcategory = async (param) => {
   const con = await db.getConnection()
-  try{
+  try {
     await con.beginTransaction()
     const result = con.query('insert into categories(category,company_id) values (? , ?)',
-     [param.category,param.company_id])
+      [param.category, param.company_id])
     await con.commit();
     return result
-  }catch (err) {
-    console.log(err)
+  } catch (err) {
+    //console.log(err)
     await con.rollback();
     throw err;
   } finally {
     con.close()
+  }
 }
-}
-exports.getcategories = async() => {
+exports.getcategories = async () => {
   try {
     let sql = `SELECT DISTINCT(categories.category_id), categories.category,categories.company_id,companydetails.credit,questions.category_id as qstncatid from categories LEFT JOIN companydetails ON categories.company_id = companydetails.company_id LEFT JOIN questions ON categories.category_id = questions.category_id where questions.category_id IS NOT NULL`;
     const result = await db.query(sql)
@@ -139,7 +148,7 @@ exports.getcategories = async() => {
     throw e
   }
 }
-exports.getcategory = async() => {
+exports.getcategory = async () => {
   try {
     let sql = `SELECT categories.*,companydetails.credit from categories LEFT JOIN companydetails ON categories.company_id = companydetails.company_id`;
     const result = await db.query(sql)
@@ -150,9 +159,9 @@ exports.getcategory = async() => {
   // const con = await db.getConnection()
   // try {
   //   await con.beginTransaction();
-    
+
   //   let result = await con.query(`select * from categories where category_id IN (${param.category_id})`)
-   
+
   //   await con.commit();
   //   return result[0]
 
@@ -163,31 +172,31 @@ exports.getcategory = async() => {
   //   con.close();
   // }
 }
-exports.creditupdate = async(param) => {
+exports.creditupdate = async (param) => {
   const con = await db.getConnection()
   try {
     await con.beginTransaction();
-  let sql ='select credit from companydetails where company_id = ?';
-  const sqlresult = await db.query(sql, [param.company_id])
-  let creditlimit = sqlresult[0][0]['credit']
-  console.log(sqlresult[0][0]['credit'])
-  await con.commit();
-  
-  
-    let creditremain = parseInt(creditlimit)  + parseInt(param.credit) 
+    let sql = 'select credit from companydetails where company_id = ?';
+    const sqlresult = await db.query(sql, [param.company_id])
+    let creditlimit = sqlresult[0][0]['credit']
+    //console.log(sqlresult[0][0]['credit'])
+    await con.commit();
+
+
+    let creditremain = parseInt(creditlimit) + parseInt(param.credit)
     await con.beginTransaction();
-   let result = con.query('update companydetails set credit = ? where company_id = ?',[creditremain,param.company_id] )
-   await con.commit();
-   //console.log(result[0][0].insertId)
-   return result[0]
-  
-  
-}catch (err) {
-  //console.log(err)
-  await con.rollback();
-  throw err;
-} finally {
-  con.close()
-}
+    let result = con.query('update companydetails set credit = ? where company_id = ?', [creditremain, param.company_id])
+    await con.commit();
+    //console.log(result[0][0].insertId)
+    return result[0]
+
+
+  } catch (err) {
+    //console.log(err)
+    await con.rollback();
+    throw err;
+  } finally {
+    con.close()
+  }
 
 }

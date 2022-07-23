@@ -70,11 +70,11 @@ exports.getmarks = async () => {
   try {
     //let sql = `SELECT * from results`;
     let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,any_value(candidatedetails.name) as name,any_value(candidatedetails.email) as email,
-     any_value(candidatedetails.mobile) as mobile,any_value(candidatedetails.ctc) as ctc,any_value(candidatedetails.pincode) as pincode,any_value(candidatedetails.candidate_id) as candidate_id,any_value(candidatedetails.company_id) as company_id,any_value(candidatedetails.position) as position,any_value(candidatetestdata.createddate) as date,any_value(candidatetestlog.timepassed) as time
+     any_value(candidatedetails.mobile) as mobile,any_value(candidatedetails.ctc) as ctc,any_value(candidatedetails.pincode) as pincode,any_value(candidatedetails.candidate_id) as candidate_id,any_value(candidatedetails.company_id) as company_id,any_value(candidatedetails.position) as position,any_value(candidatetestdata.createddate) as date,any_value(candidatetestlog.timepassed) as timepassed,any_value(candidatetestlog.timelimit) as timelimit
          from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id
       GROUP BY candidatetestdata.candidate_id`;
     // let sql = `SELECT sum(IF(candidatetestdata.answer=questions.answer, "1", "0")) as totalcorrect,candidatedetails.name as name,candidatedetails.email as email,
-    //  candidatedetails.mobile as mobile,candidatedetails.ctc as ctc,candidatedetails.pincode as pincode,candidatedetails.candidate_id as candidate_id,candidatedetails.position as position,candidatedetails.company_id as company_id,candidatedetails.position as position,candidatetestdata.createddate as date,candidatetestlog.timepassed as time
+    //  candidatedetails.mobile as mobile,candidatedetails.ctc as ctc,candidatedetails.pincode as pincode,candidatedetails.candidate_id as candidate_id,candidatedetails.position as position,candidatedetails.company_id as company_id,candidatedetails.position as position,candidatetestdata.createddate as date,candidatetestlog.timepassed as timepassed,candidatetestlog.timelimit as timelimit
     //      from candidatetestdata inner join candidatedetails on candidatedetails.candidate_id = candidatetestdata.candidate_id INNER JOIN questions on questions.question_id=candidatetestdata.question_id INNER JOIN candidatetestlog on candidatedetails.candidate_id = candidatetestlog.candidate_id
     //   GROUP BY candidatetestdata.candidate_id`;
     const result = await db.query(sql)
@@ -294,6 +294,16 @@ exports.deletecategory = async (param) => {
   try {
     let sql = `DELETE FROM categories where category_id=?`;
     const result = await db.query(sql, [param.category_id])
+    return true;
+  } catch (e) {
+    throw e
+  }
+}
+exports.deleteresults = async (param) => {
+  try {
+    let sql = `DELETE FROM candidatedetails where candidate_id=?`;
+    const result = await db.query(sql, [param.candidate_id])
+    console.log(result[0])
     return true;
   } catch (e) {
     throw e
