@@ -16,6 +16,7 @@ router.get("/getCategories", catchErrors(userContoller.getcategories))
 router.get("/getcategory", catchErrors(userContoller.getcategory))
 router.post("/creditupdate", catchErrors(userContoller.creditupdate))
 router.put("/checkpassword", catchErrors(userContoller.checkpassword))
+router.put("/selectupdate/:candidate_id", catchErrors(userContoller.selectupdate))
 // router.post("/validation", auth, catchErrors(userContoller.login))
 
 module.exports = router

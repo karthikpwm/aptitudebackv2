@@ -97,6 +97,23 @@ exports.editpassword = async (userid, param) => {
     con.close();
   }
 }
+exports.selectupdate = async (candidate_id) => {
+  const con = await db.getConnection()
+  try {
+    await con.beginTransaction();
+    let result = await con.query('UPDATE candidatetestlog SET selection = ? WHERE candidate_id = ?',
+      [1, candidate_id])
+    console.log(result)
+    await con.commit();
+    return true
+
+  } catch (err) {
+    con.rollback()
+    throw err
+  } finally {
+    con.close();
+  }
+}
 exports.deleteuser = async (param) => {
   try {
     let sql = `DELETE FROM userdetails where user_id=?`;

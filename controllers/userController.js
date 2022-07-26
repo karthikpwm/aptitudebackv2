@@ -72,6 +72,17 @@ exports.deleteuser = async (req, res) => {
 
 };
 
+exports.selectupdate = async (req, res) => {
+  if (Object.keys(req.params).length === 0 && req.params.candidate_id === undefined) {
+    throw '400:Parameter not Valid'
+  }
+
+  const result = await User.selectupdate(req.params.candidate_id)
+  res.json({
+    message: 'record updated successfully'
+  })
+
+};
 exports.createcompany = async (req, res) => {
   if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
     throw '400:Parameter not Valid'
