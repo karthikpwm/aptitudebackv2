@@ -304,6 +304,10 @@ exports.deleteresults = async (param) => {
     let sql = `DELETE FROM candidatedetails where candidate_id=?`;
     const result = await db.query(sql, [param.candidate_id])
     console.log(result[0])
+    let sql2 = 'delete from candidatetestdata where candidate_id=?'
+    const result2 = await db.query(sql2, [param.candidate_id])
+    let sql3 = 'delete from candidatetestlog where candidate_id=?'
+    const result3 = await db.query(sql3, [param.candidate_id])
     return true;
   } catch (e) {
     throw e
