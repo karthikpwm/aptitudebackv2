@@ -103,7 +103,7 @@ exports.selectupdate = async (candidate_id) => {
     await con.beginTransaction();
     let result = await con.query('UPDATE candidatetestlog SET selection = ? WHERE candidate_id = ?',
       [1, candidate_id])
-    console.log(result)
+    //console.log(result)
     await con.commit();
     return true
 
@@ -114,6 +114,17 @@ exports.selectupdate = async (candidate_id) => {
     con.close();
   }
 }
+exports.getcv = async (params) => {
+  try {
+    let sql = `SELECT cv from candidatedetails where candidate_id =?`;
+    const result = await db.query(sql, [params.candidate_id])
+    //.log(result)
+    return result[0];
+  } catch (e) {
+    throw e
+  }
+}
+
 exports.deleteuser = async (param) => {
   try {
     let sql = `DELETE FROM userdetails where user_id=?`;
@@ -216,4 +227,39 @@ exports.creditupdate = async (param) => {
     con.close()
   }
 
+}
+exports.questionupload = async (params, date) => {
+  const con = await db.getConnection()
+  await con.beginTransaction();
+  let i = 0;
+  let bulk_data = []
+  for (const param of params) {
+    await bulk_data.push([param.question, param.options, param.answer, date])
+    i = i + 1;
+
+  }
+
+  //console.log(bulk_data)
+  let sql = 'insert into customquestions (question,options,answer,uniquedate) values ?'
+
+  let result = await con.query(sql, [bulk_data])
+  await con.commit();
+  return result[0]
+}
+exports.editcredit = async (userid, param) => {
+  const con = await db.getConnection()
+  try {
+    await con.beginTransaction();
+    let result = await con.query('update companydetails SET credit = ? where company_id = ?',
+      [param.credit, userid])
+
+    await con.commit();
+    return result
+
+  } catch (err) {
+    con.rollback()
+    throw err
+  } finally {
+    con.close();
+  }
 }

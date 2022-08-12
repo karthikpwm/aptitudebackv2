@@ -2,13 +2,13 @@ const token = require('./../models/token')
 const modeltoken = require('./../models/token')
 
 exports.jwtCheck = async (req, res) => {
-  const { fromDate, toDate, company_id,category_id,timelimit } = req.body
+  const { fromDate, toDate, company_id, category_id, timelimit, type } = req.body
 
   var jwt = require('jsonwebtoken');
-  var result = await modeltoken.creditupdate({company_id})
+  var result = await modeltoken.creditupdate({ company_id })
   if (result == 0) throw "Not Enough Credits";
 
-  var token = jwt.sign({ company_id: company_id, fromDate: fromDate, toDate: toDate, category_id: category_id,timelimit: timelimit }, 'shhhhh');
+  var token = jwt.sign({ company_id: company_id, fromDate: fromDate, toDate: toDate, category_id: category_id, timelimit: timelimit, type: type }, 'shhhhh');
   let decode = jwt.decode(token, 'shhhhh')
   res.json({ decode: decode, token, verify: jwt.verify(token, 'shhhhh'), result: result })
 }

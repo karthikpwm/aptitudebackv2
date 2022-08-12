@@ -19,6 +19,15 @@ exports.printcanquestions = async (req, res) => {
   let result = await analytic.printcanquestions(req.params.candidate_id)
   res.json({ data: result })
 };
+exports.printcanquestionstwo = async (req, res) => {
+
+  if (Object.keys(req.params).length === 0 && req.params.candidate_id === undefined) {
+    throw '400:Parameter not Valid'
+  }
+
+  let result = await analytic.printcanquestionstwo(req.params.candidate_id)
+  res.json({ data: result })
+};
 //msg: sendmail,
 exports.getmarks = async (req, res) => {
   let data = await analytic.getmarks();
@@ -31,15 +40,35 @@ exports.getallqstns = async (req, res) => {
 
   res.json({ data: data })
 };
-exports.getcandidateqstnmarks = async (req, res) => {
-  let insertresult = await analytic.insertresult(req.body.candidate_id);
-  //let data = await analytic.getcandidateqstnmarks(req.body.candidate_id);
+exports.insertresult = async (req, res) => {
+  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    throw '400:Parameter not Valid'
+  }
+  const { details, type } = req.body
+  let data = await analytic.insertresult(details, type);
 
-  res.json({ data: insertresult })
+  res.json({ data: data })
+}
+exports.getcustomcandidateqstnmarks = async (req, res) => {
+  //let insertresult = await analytic.insertresult(req.body.candidate_id);
+  let data = await analytic.getcustomcandidateqstnmarks(req.body.candidate_id);
+
+  res.json({ data: data })
+};
+exports.getcandidateqstnmarks = async (req, res) => {
+  //let insertresult = await analytic.insertresult(req.body.candidate_id);
+  let data = await analytic.getcandidateqstnmarks(req.body.candidate_id);
+
+  res.json({ data: data })
 };
 exports.fetch = async (req, res) => {
   //let total = await analytic.totalWe(); 
   let result = await analytic.fetch(req.body.testlog_id, req.body.candidate_id)
+  res.json({ data: result })
+};
+
+exports.customquestions = async (req, res) => {
+  let result = await analytic.customquestions(req.body.testlog_id, req.body.candidate_id)
   res.json({ data: result })
 };
 
@@ -168,6 +197,18 @@ exports.starttest = async (req, res) => {
     throw '400:Parameter not Valid'
   }
   const result = await analytic.starttest(req.body.candidate_id, req.body.company_id, req.body.category_id)
+  res.json({
+    message: `analytic updated successfully`,
+    'check': 1,
+    testlog_id: result
+  })
+
+}
+exports.starttesttwo = async (req, res) => {
+  if (Object.keys(req.body).length === 0 && req.body.candidate_id === undefined) {
+    throw '400:Parameter not Valid'
+  }
+  const result = await analytic.starttesttwo(req.body.candidate_id, req.body.company_id, req.body.uniquedate)
   res.json({
     message: `analytic updated successfully`,
     'check': 1,
