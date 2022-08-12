@@ -1,6 +1,7 @@
 const sha256 = require('js-sha256')
 const jwt = require('jwt-then')
 const User = require('./../models/User')
+const fs = require('fs');
 
 exports.register = async (req, res) => {
   const { name, email, password, company, usertype } = req.body;
@@ -136,4 +137,41 @@ exports.creditupdate = async (req, res) => {
     message: 'added',
     result: result
   })
+}
+exports.getcv = async (req, res) => {
+  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    throw '400:Parameter not Valid'
+  }
+  const { candidate_id } = req.body
+  const result = await User.getcv({ candidate_id })
+  res.json({
+    data: result,
+
+  })
+}
+exports.downloadfile = async (req, res) => {
+
+  const { filename } = req.params
+  let result = fs.readFileSync(`${__dirname}/../public/${filename}`, 'base64')
+  res.json(result)
+}
+exports.questionupload = async (req, res) => {
+  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    throw '400:Parameter not Valid'
+  }
+  const { data, toDate } = req.body
+  const result = await User.questionupload(data, toDate)
+  res.json({
+    message: 'questions uploaded',
+    result: result
+  })
+
+}
+exports.editcredit = async (req, res) => {
+  if (Object.keys(req.params).length === 0 && req.params.userid === undefined) {
+    throw '400:Parameter not Valid'
+  }
+  const { credit } = req.body
+  let result = await User.editcredit(req.params.userid, { credit })
+  res.json({ data: result })
 }
