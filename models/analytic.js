@@ -114,7 +114,7 @@ exports.getmarks = async () => {
 }
 exports.getallqstns = async () => {
   try {
-    let sql = `SELECT a.*,b.category from questions as a LEFT JOIN  categories as b ON a.category_id = b.category_id`;
+    let sql = `SELECT a.*,b.category from questions as a LEFT JOIN  categories as b ON a.category_id = b.category_id WHERE b.category IS NOT NULL`;
     const result = await db.query(sql)
     return result[0];
   } catch (e) {
